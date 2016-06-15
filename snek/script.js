@@ -10,7 +10,7 @@
     ];
     var SNEK_COLOR = 'red';
 
-    var SPEED = 300; // Amount of milliseconds before moving.
+    var SPEED = 500; // pixels per second
 
     // Directions
     var UP = 'UP';
@@ -30,7 +30,7 @@
         this.ctx = ctx;
         this.length = SNEK_START_LENGTH;
         this.segments = [];
-        this.time = Date.now();
+        this.lastdraw = null;
         for (var i = 0; i < this.length; i++) {
             this.segments[i] = {
                 pos : [
@@ -50,34 +50,32 @@
         while(i--) {
             this.ctx.fillRect(this.segments[i].pos[0], this.segments[i].pos[1], SNEK_SIZE, SNEK_SIZE);
         }
-
-        if(Date.now() - this.time > SPEED) {
-            this.move();
-            this.time = Date.now();
-        }
+        var now = Date.now();
+        var deltaTime = this.lastdraw ? now - this.lastdraw : 0;
+        var deltaPix = (deltaTime / 1000) * SPEED;
+        this.move(deltaPix)
+        this.lastdraw = now;
     };
 
 
-    Snek.prototype.move = function() {
+    Snek.prototype.move = function(delta) {
         var i = this.segments.length;
         while(i--) {
-            
-
             switch(this.segments[i].direction) {
                 case UP :
-                this.segments[i].pos[1] -= SNEK_SIZE;
+                this.segments[i].pos[1] -= delta;
                 break;
 
                 case DOWN :
-                this.segments[i].pos[1] += SNEK_SIZE;
+                this.segments[i].pos[1] += delta;
                 break;
 
                 case LEFT :
-                this.segments[i].pos[0] -= SNEK_SIZE;
+                this.segments[i].pos[0] -= delta;
                 break;
 
                 case RIGHT :
-                this.segments[i].pos[0] += SNEK_SIZE;
+                this.segments[i].pos[0] += delta;
                 break;
             }
 
